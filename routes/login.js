@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const { jsonResponse } = require("../lib/jsonResponse");
+const User = require ("../schema/user")
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
     const { username, password } = req.body;
 
     if (!!!username || !!!password) {
@@ -11,18 +12,31 @@ router.post("/", (req, res) => {
         })
      )
     }
-    // autenticar usuario
-    const accessToken = "access_token"
-    const refreshToken = "refresh_token"
-    const user = {
-        id:'1',
-        name: 'John Doe',
-        username: 'xxxxxxxx'
+    const user = await User.findOne({ username})
 
+    if(user) {
+        const correctPassword = await user.comparePassword(password, user.password);
+
+        if(correctPassword) {
+            const accessToken = "access_token"
+            const refreshToken = "refresh_token"
+
+            res
+                .status(200)
+                .json(jsonResponse(200, { user, accessToken, refreshToken}))
+        }else{
+            res.status(404).json(jasonResponse(400, {
+                error: "user or password is incorrect",
+            }))
+        }
+    }else{
+        res.status(404).json(jasonResponse(400, {
+            error: "user not found",
+        }))
     }
-    res
-        .status(200)
-        .json(jsonResponse(200, { user, accessToken, refreshToken}))
+
+    // autenticar usuario
+   
 
    
 })
