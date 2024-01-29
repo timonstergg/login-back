@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { jsonResponse } = require("../lib/jsonResponse");
 const User = require ("../schema/user")
+const getUserInfo = require ("../lib/getUserinfo")
 
 router.post("/", async (req, res) => {
     const { username, password } = req.body;
@@ -18,24 +19,30 @@ router.post("/", async (req, res) => {
         const correctPassword = await user.comparePassword(password, user.password);
 
         if(correctPassword) {
-            const accessToken = "access_token"
-            const refreshToken = "refresh_token"
+            // autentificar un usuario
+            const accessToken = User.createAccessToken()
+            const refreshToken = await User.createRefreshToken()
 
             res
                 .status(200)
-                .json(jsonResponse(200, { user, accessToken, refreshToken}))
+                .json(
+                    jsonResponse(200, {
+                        user: getUserInfo(user),
+                        accessToken,
+                        refreshToken})
+                 )
         }else{
-            res.status(404).json(jasonResponse(400, {
+            res.status(400).json(jsonResponse(400, {
                 error: "user or password is incorrect",
             }))
         }
     }else{
-        res.status(404).json(jasonResponse(400, {
+        res.status(404).json(jsonResponse(400, {
             error: "user not found",
         }))
     }
 
-    // autenticar usuario
+    
    
 
    
