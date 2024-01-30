@@ -20,8 +20,8 @@ router.post("/", async (req, res) => {
 
         if(correctPassword) {
             // autentificar un usuario
-            const accessToken = User.createAccessToken()
-            const refreshToken = await User.createRefreshToken()
+            const accessToken = user.createAccessToken()
+            const refreshToken = await user.createRefreshToken()
 
             res
                 .status(200)
