@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
         )
     }
     const newUser = new User({ username, name, password })        
-    newUser.save()
+    await newUser.save()
     res.status(200).json(jsonResponse(200, { message: "Usuario creado satisfactoriamente"}))
 
     //res.send("signub")
